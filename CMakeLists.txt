@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
 
 project(expresscpp LANGUAGES CXX)
+include(FetchContent)
 
 file(
   STRINGS 
@@ -151,6 +152,42 @@ endif(EXPRESSCPP_RUN_CLANG_TIDY)
 ### dependencies
 ###
 
+FetchContent_Declare(
+  nlohmann_json
+  GIT_REPOSITORY https://github.com/nlohmann/json.git
+  GIT_TAG v3.9.1
+  )
+
+FetchContent_Declare(
+  fmt
+  GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+  )
+
+FetchContent_GetProperties(nlohmann_json)
+if(NOT nlohmann_json_POPULATED)
+  FetchContent_Populate(nlohmann_json)
+  add_subdirectory(${nlohmann_json_SOURCE_DIR} ${nlohmann_json_BINARY_DIR})
+
+endif()
+
+set(nlohmann_json_DIR ${nlohmann_json_BINARY_DIR})
+
+FetchContent_GetProperties(fmt)
+if(NOT fmt_POPULATED)
+
+  FetchContent_Populate(fmt)
+
+  set(FMT_INSTALL true CACHE INTERNAL "FMT project")
+
+  # add_subdirectory(${fmt_SOURCE_DIR} ${fmt_BINARY_DIR})
+  add_subdirectory(${fmt_SOURCE_DIR} EXCLUDE_FROM_ALL)
+
+
+endif()
+
+
+
+
 find_package(Threads
              REQUIRED)
 
@@ -188,8 +225,7 @@ add_library(${PROJECT_NAME}
             ${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/console.hpp
             ${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/path_to_regexp.hpp
             ${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/handlerfunctor.hpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/key.hpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/layer.hpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/key.hpp            ${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/layer.hpp
             ${CMAKE_CURRENT_SOURCE_DIR}/src/path_to_regexp.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/src/expresscpp.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/src/layer.cpp
